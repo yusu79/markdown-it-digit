@@ -1,0 +1,33 @@
+{
+    "private": true,
+    "name": "markdown-it-digit",
+    "version": "0.1.0",
+    "description": "",
+    "main": "src/index.js",
+    "files": [
+        "src"
+    ],
+
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/yusu79/markdown-it-digit.git"
+    },
+
+    "keywords": [],
+
+    "author": {
+        "name": "yusu79",
+        "email": "oss@yusu79.com",
+        "url": "https://github.com/yusu79"
+    },
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/yusu79/markdown-it-digit/issues"
+    },
+    "sponsor": {
+        "url": "https://github.com/sponsors/yusu79"
+    }
+}
