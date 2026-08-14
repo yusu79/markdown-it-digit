@@ -13,6 +13,7 @@
 - 内部実装上の軽微な判断は、既存コードや既存の設計方針に従って決定してよい
 - 実装後は `package.json` に定義されているテストと lint を実行し、結果を確認する
 - 作業中に依頼と無関係な問題を発見した場合は、勝手に修正せず報告する
+- 作業開始時にOut-of-Code Insightsのアノテーションを確認する
 
 
 
@@ -86,11 +87,15 @@
 
 ### 基本方針
 
-* 作業前に、変更対象のコードに関連する未解決の annotation がある場合は内容を確認する
+* 作業を開始する前に、Out-of-Code Insights の未解決の annotation を確認する
+* 変更対象のコードに関連する annotation がある場合は、対象ファイルを変更する前に内容を確認する
 * annotation に指示・質問・注意事項がある場合は、作業時のコンテキストとして扱う
 * annotation の内容だけで判断せず、必要に応じて実際のコード・テスト・仕様と照合する
 * 実装理由や設計判断など、ソースコードの可読性のために不要な説明コメントはコードへ追加せず、必要に応じて annotation として残す
 * コード自体の理解に不可欠なコメントは、従来どおりソースコード内に記述してよい
+* 複数フォルダーの VS Code ワークスペースでは、Out-of-Code Insights MCP のワークスペースルートと annotation の相対パスが一致せず、行番号が `-1` になる場合がある
+* `line: -1` の場合でも annotation 自体が無効とは判断せず、`fileUri` や実際のワークスペース構成を確認して対象ファイルを特定する
+* 行番号を解決できない場合は、推測だけで対象コードを決めず、実ファイルと annotation の内容を照合する
 
 ### annotation の追加
 
@@ -106,22 +111,27 @@
 
 ### annotation への対応
 
-* annotation に質問や指示がある場合は、必要に応じて Reply を使用して回答する
-* annotation の指摘に対応した場合は、必要に応じて対応内容を Reply として残す
-* 対応が完了した annotation は、内容を削除せず Resolved にする
+* annotation に質問や指示がある場合は、利用可能な機能の範囲で回答または対応内容を残す
+* annotation の指摘に対応した場合は、必要に応じて対応内容を記録する
+* 対応が完了した annotation は削除せず Resolved にする
 * 対応していない annotation を勝手に Resolved にしない
 * annotation の対象コードとの対応関係が不明な場合は、推測で別のコードへ関連付けない
 
 ### Codex からの操作
 
-Out-of-Code Insights を操作する場合は、利用可能であれば専用の MCP ツールを使用する。
+Out-of-Code Insights の確認・操作には、利用可能であれば `out_of_code_insights` MCP Server の専用ツールを使用する。
 
-MCP ツールが利用可能な場合は、原則として annotation の保存ファイルを直接編集せず、Out-of-Code Insights が提供する操作を使用する。
+新しいセッションでも、作業開始時に `list_annotations` を使用して未解決の annotation を確認する。
+MCP Server が利用可能かどうかを確認するためだけのテスト annotation は作成しない。
 
-MCP ツールが利用できず、annotation を直接確認する必要がある場合は、現在のプロジェクトディレクトリだけを前提にせず、VS Code ワークスペース側にある `.out-of-code-insights/annotations.json` を確認する。
+MCP Server が利用可能な場合は、annotation の保存ファイルを直接編集せず、Out-of-Code Insights が提供する MCP ツールを使用する。
 
-保存場所が特定できない場合は、推測したパスを使用せず、ワークスペース内から `.out-of-code-insights/annotations.json` を検索して確認する。
+annotation の追加・更新・Resolved 化・削除など、annotation の状態を変更する操作は、実際の作業上必要な場合に限って行う。
 
+MCP Server が利用できない場合は、その旨を報告する。
+annotation を直接確認する必要がある場合は、現在のプロジェクトディレクトリだけを前提にせず、VS Code ワークスペース側にある `.out-of-code-insights/annotations.json` を確認する。
+
+保存場所が特定できない場合は推測したパスを使用せず、ワークスペース内から `.out-of-code-insights/annotations.json` を検索して確認する。
 
 ## プロジェクト概要
 
