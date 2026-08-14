@@ -23,6 +23,16 @@ test("enはHTML要素を含まないプレーンテキストを出力する", ()
     );
 });
 
+test("inはインド式に区切ったプレーンテキストを出力する", () => {
+    assert.equal(
+        renderToken({
+            content: "$123456789${in}",
+            meta: { digit: { number: "123456789", locale: "in" } }
+        }),
+        "12,34,56,789"
+    );
+});
+
 test("jpは固定された単位だけをsub要素として出力する", () => {
     assert.equal(
         renderToken({

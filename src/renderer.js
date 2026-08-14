@@ -1,10 +1,12 @@
 "use strict";
 
 const formatEnglish = require("./locales/en");
+const formatIndian = require("./locales/in");
 const formatJapanese = require("./locales/jp");
 
 const FORMATTERS = {
     en: formatEnglish,
+    in: formatIndian,
     jp: formatJapanese
 };
 

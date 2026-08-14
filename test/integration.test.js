@@ -47,6 +47,15 @@ test("enの専用記法を3桁区切りで描画する", () => {
     );
 });
 
+test("inの専用記法をインド式の桁区切りで描画する", () => {
+    const markdownIt = new MarkdownIt().use(markdownItDigit);
+
+    assert.equal(
+        markdownIt.render("$123456789${in}"),
+        "<p>12,34,56,789</p>\n"
+    );
+});
+
 test("未対応ロケールは元の専用記法をそのまま描画する", () => {
     const markdownIt = new MarkdownIt().use(markdownItDigit);
 
