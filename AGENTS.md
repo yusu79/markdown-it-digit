@@ -13,7 +13,7 @@
 - 内部実装上の軽微な判断は、既存コードや既存の設計方針に従って決定してよい
 - 実装後は `package.json` に定義されているテストと lint を実行し、結果を確認する
 - 作業中に依頼と無関係な問題を発見した場合は、勝手に修正せず報告する
-- 作業開始時にOut-of-Code Insightsのアノテーションを確認する
+- Out-of-Code Insights MCP のlist_annotations を使用して未解決 annotation を確認する。利用不可と判断する前に /mcp の公開ツールを確認する。
 
 
 

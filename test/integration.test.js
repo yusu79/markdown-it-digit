@@ -74,6 +74,19 @@ test("jpの専用記法を日本語4桁単位で描画する", () => {
     );
 });
 
+test("cn、kr、twの専用記法を各表記の4桁単位で描画する", () => {
+    const markdownIt = new MarkdownIt().use(markdownItDigit);
+
+    assert.equal(
+        markdownIt.render("$123456789${cn} / $123456789${kr} / $123456789${tw}"),
+        [
+            "<p>1<sub>亿</sub>2345<sub>万</sub>6789 / ",
+            "1<sub>억</sub>2345<sub>만</sub>6789 / ",
+            "1<sub>億</sub>2345<sub>萬</sub>6789</p>\n"
+        ].join("")
+    );
+});
+
 test("エスケープされた専用記法をトークン化しない", () => {
     assert.equal(findDigitTokens("\\$1000${en}").length, 0);
 });

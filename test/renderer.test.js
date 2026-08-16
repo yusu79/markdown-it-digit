@@ -43,6 +43,24 @@ test("jpは固定された単位だけをsub要素として出力する", () => 
     );
 });
 
+test("cn、kr、twは各表記の単位をsub要素として出力する", () => {
+    const cases = [
+        ["cn", "1<sub>亿</sub>2345<sub>万</sub>6789"],
+        ["kr", "1<sub>억</sub>2345<sub>만</sub>6789"],
+        ["tw", "1<sub>億</sub>2345<sub>萬</sub>6789"]
+    ];
+
+    for (const [locale, expected] of cases) {
+        assert.equal(
+            renderToken({
+                content: `$123456789\${${locale}}`,
+                meta: { digit: { number: "123456789", locale } }
+            }),
+            expected
+        );
+    }
+});
+
 test("未対応ロケールの元記法をHTMLエスケープする", () => {
     assert.equal(
         renderToken({

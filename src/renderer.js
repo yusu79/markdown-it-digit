@@ -1,13 +1,19 @@
 "use strict";
 
+const formatChinese = require("./locales/cn");
 const formatEnglish = require("./locales/en");
 const formatIndian = require("./locales/in");
 const formatJapanese = require("./locales/jp");
+const formatKorean = require("./locales/kr");
+const formatTaiwanese = require("./locales/tw");
 
 const FORMATTERS = {
+    cn: formatChinese,
     en: formatEnglish,
     in: formatIndian,
-    jp: formatJapanese
+    jp: formatJapanese,
+    kr: formatKorean,
+    tw: formatTaiwanese
 };
 
 function createDigitRenderer(markdownIt) {
