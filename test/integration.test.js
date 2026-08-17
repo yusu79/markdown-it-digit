@@ -65,6 +65,28 @@ test("未対応ロケールは元の専用記法をそのまま描画する", ()
     );
 });
 
+test("不完全または不正な記法を元の文字列として描画する", () => {
+    const markdownIt = new MarkdownIt().use(markdownItDigit);
+    const sources = ["$abc${en}", "$100${", "$100${}", "${en}", "$${en}"];
+
+    for (const source of sources) {
+        assert.equal(markdownIt.renderInline(source), source, source);
+    }
+});
+
+test("構文上有効でも未対応のlocale識別子は元記法を保持する", () => {
+    const markdownIt = new MarkdownIt().use(markdownItDigit);
+
+    assert.equal(markdownIt.renderInline("$1000${EN}"), "$1000${EN}");
+    assert.equal(markdownIt.renderInline("$1000${en-US}"), "$1000${en-US}");
+});
+
+test("先頭ゼロを保持して変換する", () => {
+    const markdownIt = new MarkdownIt().use(markdownItDigit);
+
+    assert.equal(markdownIt.renderInline("$0001000${en}"), "0,001,000");
+});
+
 test("jpの専用記法を日本語4桁単位で描画する", () => {
     const markdownIt = new MarkdownIt().use(markdownItDigit);
 
@@ -91,6 +113,18 @@ test("エスケープされた専用記法をトークン化しない", () => {
     assert.equal(findDigitTokens("\\$1000${en}").length, 0);
 });
 
+test("偶数個のバックスラッシュ後にある専用記法は変換する", () => {
+    const markdownIt = new MarkdownIt().use(markdownItDigit);
+
+    assert.equal(markdownIt.renderInline("\\\\$1000${en}"), "\\1,000");
+});
+
+test("空白なしで隣接した専用記法をそれぞれ変換する", () => {
+    const markdownIt = new MarkdownIt().use(markdownItDigit);
+
+    assert.equal(markdownIt.renderInline("$1${en}$20000${jp}"), "12<sub>万</sub>0000");
+});
+
 test("インラインコード内をトークン化しない", () => {
     assert.equal(findDigitTokens("`$1000${en}`").length, 0);
 });
@@ -107,6 +141,15 @@ test("MarkdownリンクのURLをトークン化しない", () => {
     assert.equal(
         findDigitTokens("[example](https://example.com/$1000${en})").length,
         0
+    );
+});
+
+test("Markdownリンクの表示テキストは変換する", () => {
+    const markdownIt = new MarkdownIt().use(markdownItDigit);
+
+    assert.equal(
+        markdownIt.renderInline("[$1000${en}](https://example.com)"),
+        '<a href="https://example.com">1,000</a>'
     );
 });
 
@@ -129,6 +172,24 @@ test("括弧内や他スキームのURLをトークン化しない", () => {
     }
 });
 
+test("明示的なURI scheme内をトークン化しない", () => {
+    const sources = [
+        "mailto:user+$1000${en}@example.com",
+        "tel:+$1000${en}",
+        "custom:value/$1000${en}"
+    ];
+
+    for (const source of sources) {
+        assert.equal(findDigitTokens(source).length, 0, source);
+    }
+});
+
+test("単なるパス風テキスト内は変換する", () => {
+    const markdownIt = new MarkdownIt().use(markdownItDigit);
+
+    assert.equal(markdownIt.renderInline("docs/$1000${en}"), "docs/1,000");
+});
+
 test("Markdownの自動リンク内をトークン化しない", () => {
     assert.equal(
         findDigitTokens("<https://example.com/$1000${en}>").length,
@@ -148,6 +209,25 @@ test("HTMLを有効にした場合も属性内をトークン化しない", () =
         '<span data-value="$1000${en}">text</span>',
         {}
     );
+    const digitTokens = tokens
+        .flatMap((token) => token.children ?? [])
+        .filter((token) => token.type === "digit");
+
+    assert.equal(digitTokens.length, 0);
+});
+
+test("HTMLタグ間の通常テキストは変換する", () => {
+    const markdownIt = new MarkdownIt({ html: true }).use(markdownItDigit);
+
+    assert.equal(
+        markdownIt.renderInline('<span>$1000${en}</span>'),
+        "<span>1,000</span>"
+    );
+});
+
+test("HTMLを有効にした場合はコメント内をトークン化しない", () => {
+    const markdownIt = new MarkdownIt({ html: true }).use(markdownItDigit);
+    const tokens = markdownIt.parseInline("<!-- $1000${en} -->", {});
     const digitTokens = tokens
         .flatMap((token) => token.children ?? [])
         .filter((token) => token.type === "digit");

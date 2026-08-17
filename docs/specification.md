@@ -486,6 +486,14 @@ $1000${en}
 $1000000${jp}
 ```
 
+整数は1文字以上のASCII数字（`0` から `9`）で記述する。先頭ゼロも入力された桁の一部として保持し、削除しない。
+
+```text
+$0001000${en}
+```
+
+上記は `0,001,000` へ変換する。
+
 以下については将来的な拡張対象とする。
 
 ### 負数
@@ -556,6 +564,8 @@ $1000000${en}
 変換すると 1,000,000 です。
 ```
 
+通常のインラインテキストに加えて、強調などのMarkdown装飾内やMarkdownリンクの表示テキスト、HTMLタグ間のテキストも変換対象とする。
+
 ---
 
 ## 変換対象外
@@ -564,7 +574,11 @@ $1000000${en}
 
 * コードブロック内
 * インラインコード内
-* URL 内
+* URLまたは明示的なURI scheme内
+* Markdownリンクのリンク先
+* HTML属性内
+* HTMLを有効にした場合のHTMLコメント内
+* バックスラッシュでエスケープされた記法
 
 ### コードブロック
 
@@ -597,6 +611,30 @@ Markdown のリンク先 URL についても変換しない。
 ```markdown
 [example](https://example.com/$1000000${en})
 ```
+
+`mailto:`、`tel:`、その他の明示的な `scheme:` で始まるURI内も変換しない。
+
+```text
+mailto:user+$1000000${en}@example.com
+```
+
+一方、URI schemeを持たない単なるパス風テキストは通常のインラインテキストとして扱い、専用記法を変換する。
+
+```text
+docs/$1000000${en}
+```
+
+### HTML
+
+HTML属性内は変換しない。HTMLが有効な場合、HTMLコメントなどmarkdown-itがHTMLトークンとして解析した領域も変換しない。
+
+HTMLタグ間にある通常のテキストは変換対象とする。
+
+```html
+<span>$1000000${en}</span>
+```
+
+上記のテキスト部分は `1,000,000` へ変換する。
 
 ---
 
@@ -652,6 +690,8 @@ $1000000${unknown}
 
 レンダリング処理全体をエラーにしない。
 
+locale識別子はASCII英字で始まり、ASCII英数字とハイフン区切りの追加部分を使用できる。識別子は大文字小文字を区別するため、構文として有効でも登録されていない `EN` や `en-US` は未対応ロケールとして扱う。
+
 ---
 
 ## 不正な構文
@@ -669,6 +709,8 @@ $1000000${}
 ```
 
 これらは入力された文字列をそのまま出力する。
+
+formatter内部で予期しない例外が発生した場合も、Markdown全体のレンダリングを失敗させない。対象となった元記法をHTMLエスケープして出力する。
 
 ---
 
@@ -740,6 +782,32 @@ Markdown-it のトークンを利用し、変換可能なテキストノード�
 * その他 Markdown-it がコードまたは URL として解析した領域
 
 基本的には通常のインラインテキストに含まれる専用記法のみを変換する。
+
+---
+
+## Public API
+
+本パッケージはCommonJSのmarkdown-itプラグイン関数だけをPublic APIとして公開する。
+
+```js
+const MarkdownIt = require("markdown-it");
+const markdownItDigit = require("markdown-it-digit");
+
+const md = new MarkdownIt().use(markdownItDigit);
+```
+
+plugin options、ESM用エントリポイント、外部locale登録APIは提供しない。
+
+次のモジュールとデータ構造はInternal APIであり、互換性を保証せず、パッケージのdeep importからも公開しない。
+
+* `src/parser.js`
+* `src/renderer.js`
+* `src/locales/*`
+* `createEastAsianFormatter`
+* formatterレジストリ
+* digit tokenの内部表現と `token.meta.digit`
+
+利用者は `require("markdown-it-digit")` から取得したプラグイン関数だけを使用する。
 
 ---
 

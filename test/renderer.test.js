@@ -6,9 +6,9 @@ const MarkdownIt = require("markdown-it");
 
 const createDigitRenderer = require("../src/renderer");
 
-function renderToken(token) {
+function renderToken(token, formatters) {
     const markdownIt = new MarkdownIt();
-    const renderDigit = createDigitRenderer(markdownIt);
+    const renderDigit = createDigitRenderer(markdownIt, formatters);
 
     return renderDigit([token], 0);
 }
@@ -85,5 +85,24 @@ test("解析情報がないトークンも安全にフォールバックする",
     assert.equal(
         renderToken({ content: "<strong>unsafe</strong>" }),
         "&lt;strong&gt;unsafe&lt;/strong&gt;"
+    );
+});
+
+test("formatterの例外時は元記法をHTMLエスケープして返す", () => {
+    const formatters = {
+        test: () => {
+            throw new Error("formatter failed");
+        }
+    };
+
+    assert.equal(
+        renderToken(
+            {
+                content: "$1000${test}<unsafe>",
+                meta: { digit: { number: "1000", locale: "test" } }
+            },
+            formatters
+        ),
+        "$1000${test}&lt;unsafe&gt;"
     );
 });

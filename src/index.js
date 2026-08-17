@@ -6,7 +6,7 @@ const createDigitRenderer = require("./renderer");
 function isInsideUrl(source, position) {
     const prefix = source.slice(0, position);
 
-    return /(?:^|[\s(<[])(?:[a-z][a-z0-9+.-]*:\/\/|www\.)[^\s<>]*$/i.test(prefix);
+    return /(?:^|[\s(<[])(?:[a-z][a-z0-9+.-]*:|www\.)[^\s<>]*$/i.test(prefix);
 }
 
 function isInsideHtmlTag(source, position) {
