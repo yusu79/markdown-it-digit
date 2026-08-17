@@ -1,23 +1,23 @@
 {
-    "private": true,
     "name": "markdown-it-digit",
-    "version": "0.1.0",
-    "description": "",
+    "version": "1.0.0",
+    "description": "A markdown-it plugin for locale-aware integer formatting.",
     "main": "src/index.js",
+    "exports": {
+        ".": "./src/index.js"
+    },
     "files": [
         "src"
     ],
-
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "node --test",
+        "lint": "eslint eslint.config.js src test"
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/yusu79/markdown-it-digit.git"
     },
-
     "keywords": [],
-
     "author": {
         "name": "yusu79",
         "email": "oss@yusu79.com",
@@ -29,5 +29,10 @@
     },
     "sponsor": {
         "url": "https://github.com/sponsors/yusu79"
+    },
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "eslint": "^10.8.1",
+        "markdown-it": "^15.0.0"
     }
 }
